@@ -39,6 +39,9 @@ stages:
   variables:
     acrsecret: k8sexamplesacrauth
     acrdevurl: 'kubernetedcontainer.azurecr.io'
+  jobs:
+  - job: Deploy
+    displayName: Deploy to AKS  
     pool: 
       vmImage: ubuntu-latest
     steps:
