@@ -63,7 +63,7 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         artifactName: 'menifests'
-        downloadPath: '$(System.ArtifactsDirectory)/menifests'
+        downloadPath: '$(Pipeline.Workspace)/menifests'
     - task: KubernetesManifest@1
       displayName: create secret
       inputs:
@@ -85,8 +85,8 @@ stages:
         kubernetesServiceConnection: 'kubernetesserviceconnection'
         namespace: 'default'
         manifests: |
-          $(System.ArtifactsDirectory)/manifests/deployment.yml
-          $(System.ArtifactsDirectory)/manifests/service.yml
+          $(Pipeline.Workspace)/menifests/deployment.yml
+          $(Pipeline.Workspace)/menifests/service.yml
         imagePullSecrets: |
           $(imagePullSecret)
         containers: |
