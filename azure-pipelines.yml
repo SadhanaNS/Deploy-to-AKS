@@ -39,36 +39,29 @@ stages:
   variables:
     acrsecret: k8sexamplesacrauth
     acrdevurl: 'kubernetedcontainer.azurecr.io'
-    replicaNo: 1
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy to AKS
     pool: 
       vmImage: ubuntu-latest
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              buildType: 'current'
-              artifactName: 'manifests'
-              targetPath: '$(Pipeline.Workspace)/manifests'
-          - task: KubernetesManifest@1
-            inputs:
-              action: 'createSecret'
-              connectionType: 'kubernetesServiceConnection'
-              kubernetesServiceConnection: 'kubernetesserviceconnection'
-              namespace: 'default'
-              secretType: 'dockerRegistry'
-              secretName: 'acrsecret'
-              dockerRegistryEndpoint: 'dockerserviceconnection'
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'manifests'
+        targetPath: '$(Pipeline.Workspace)/manifests'
+    - task: KubernetesManifest@1
+      inputs:
+        action: 'createSecret'
+        connectionType: 'kubernetesServiceConnection'
+        kubernetesServiceConnection: 'kubernetesserviceconnection'
+        namespace: 'default'
+        secretType: 'dockerRegistry'
+        secretName: 'acrsecret'
+        dockerRegistryEndpoint: 'dockerserviceconnection'
 
-          - task: KubernetesManifest@0
-            inputs:
-              action: 'deploy'
-              namespace: 'default'
-              manifests: |
-                $(Pipeline.Workspace)/manifests/deployment.yml
-                $(Pipeline.Workspace)/manifests/service.yml
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'deploy'
+        namespace: 'default'
+        manifests: |
+          $(Pipeline.Workspace)/manifests/deployment.yml
+          $(Pipeline.Workspace)/manifests/service.yml
 
