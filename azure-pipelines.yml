@@ -17,19 +17,19 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - task: Docker@2
-      displayName: Build an image
       inputs:
-        containerRegistry: 'K8SExamplesACR'
-        repository: '$(imageRepo)'
+        containerRegistry: 'dockerserviceconnection'
+        repository: 'kubernetedcontainer'
         command: 'buildAndPush'
         Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
         tags: |
           $(tag)
           latest
+
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Pipeline.Workspace)/s/kubernetes'
-        artifact: 'manifests'
+        artifact: 'menifests'
         publishLocation: 'pipeline'
         
 - stage: Deploy
@@ -37,12 +37,11 @@ stages:
   dependsOn: Build
   variables:
     acrsecret: k8sexamplesacrauth
-    acrdevurl: 'k8sexamplesacr.azurecr.io'
-    replicaNo: 3
+    acrdevurl: 'kubernetedcontainer.azurecr.io'
+    replicaNo: 1
   jobs:
   - deployment: Deploy
     displayName: Deploy to AKS
-    environment: 'k8sdev.default'
     pool: 
       vmImage: ubuntu-latest
     strategy:
@@ -54,13 +53,15 @@ stages:
               buildType: 'current'
               artifactName: 'manifests'
               targetPath: '$(Pipeline.Workspace)/manifests'
-          - task: KubernetesManifest@0
+          - task: KubernetesManifest@1
             inputs:
               action: 'createSecret'
+              connectionType: 'kubernetesServiceConnection'
+              kubernetesServiceConnection: 'kubernetesserviceconnection'
               namespace: 'default'
               secretType: 'dockerRegistry'
-              secretName: '$(acrsecret)'
-              dockerRegistryEndpoint: 'K8SExamplesACR'
+              secretName: 'acrsecret'
+              dockerRegistryEndpoint: 'dockerserviceconnection'
 
           - task: KubernetesManifest@0
             inputs:
@@ -69,5 +70,4 @@ stages:
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
-              containers: '$(acrdevurl)/$(imageRepo):$(tag)'
-              imagePullSecrets: '$(acrsecret)'
+
