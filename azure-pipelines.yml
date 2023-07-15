@@ -57,11 +57,12 @@ stages:
     pool: 
       vmImage: ubuntu-latest
     steps:
-    - task: DownloadPipelineArtifact@2
+    - task: DownloadBuildArtifacts@1
       inputs:
         buildType: 'current'
-        artifactName: 'manifests'
-        targetPath: '$(Pipeline.Workspace)/manifests'
+        downloadType: 'single'
+        artifactName: 'menifests'
+        downloadPath: '$(System.ArtifactsDirectory)/menifests'
     - task: KubernetesManifest@1
       inputs:
         action: 'createSecret'
