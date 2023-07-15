@@ -75,9 +75,11 @@ stages:
         secretName: 'acrsecret'
         dockerRegistryEndpoint: 'dockerserviceconnection'
 
-    - task: KubernetesManifest@0
+    - task: KubernetesManifest@1
       inputs:
         action: 'deploy'
+        connectionType: 'kubernetesServiceConnection'
+        kubernetesServiceConnection: 'kubernetesserviceconnection'
         namespace: 'default'
         manifests: |
           $(Pipeline.Workspace)/manifests/deployment.yml
