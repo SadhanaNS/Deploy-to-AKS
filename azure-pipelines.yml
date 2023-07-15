@@ -15,6 +15,7 @@ variables:
   containerRegistry: 'kubernetedcontainer.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/app/Dockerfile'
   tag: '$(Build.BuildId)'
+  imagePullSecret: 'kubernetedcontainer1265936e-auth'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -64,6 +65,7 @@ stages:
         artifactName: 'menifests'
         downloadPath: '$(System.ArtifactsDirectory)/menifests'
     - task: KubernetesManifest@1
+      displayName: create secret
       inputs:
         action: 'createSecret'
         connectionType: 'azureResourceManager'
@@ -72,15 +74,21 @@ stages:
         kubernetesCluster: 'Kube-p2'
         namespace: 'default'
         secretType: 'dockerRegistry'
-        secretName: 'acrsecret'
+        secretName: $(imagePullSecret)
         dockerRegistryEndpoint: 'dockerserviceconnection'
 
     - task: KubernetesManifest@1
+      displayName: deploy to kuberntes cluster
       inputs:
         action: 'deploy'
         connectionType: 'kubernetesServiceConnection'
         kubernetesServiceConnection: 'kubernetesserviceconnection'
         namespace: 'default'
         manifests: |
-          $(Pipeline.Workspace)/manifests
+          $(Pipeline.Workspace)/manifests/deployment.yml
+          $(Pipeline.Workspace)/manifests/service.yml
+        imagePullSecrets: |
+          $(imagePullSecret)
+        containers: |
+          $(containerRegistry)/$(imageRepository):$(tag)
     
