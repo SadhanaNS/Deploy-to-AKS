@@ -66,8 +66,10 @@ stages:
     - task: KubernetesManifest@1
       inputs:
         action: 'createSecret'
-        connectionType: 'kubernetesServiceConnection'
-        kubernetesServiceConnection: 'kubernetesserviceconnection'
+        connectionType: 'azureResourceManager'
+        azureSubscriptionConnection: 'Pay-As-You-Go(1)(63624c86-fe10-49d1-b0c7-b5b0be84da6a)'
+        azureResourceGroup: 'adi-p12'
+        kubernetesCluster: 'Kube-p2'
         namespace: 'default'
         secretType: 'dockerRegistry'
         secretName: 'acrsecret'
@@ -80,4 +82,4 @@ stages:
         manifests: |
           $(Pipeline.Workspace)/manifests/deployment.yml
           $(Pipeline.Workspace)/manifests/service.yml
-
+    
