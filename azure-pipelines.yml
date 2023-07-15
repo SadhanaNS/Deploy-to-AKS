@@ -82,6 +82,5 @@ stages:
         kubernetesServiceConnection: 'kubernetesserviceconnection'
         namespace: 'default'
         manifests: |
-          menifests/deployment.yml
-          menifests/service.yml
+          $(Pipeline.Workspace)/manifests
     
