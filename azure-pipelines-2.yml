@@ -75,17 +75,15 @@ stages:
         secretName: $(imagePullSecret)
         dockerRegistryEndpoint: 'dockerserviceconnection'
 
+
     - task: KubernetesManifest@1
-      displayName: deploy to kuberntes cluster
       inputs:
         action: 'deploy'
         connectionType: 'kubernetesServiceConnection'
-        kubernetesServiceConnection: 'kubernetesserviceconnection'
+        kubernetesServiceConnection: 'Kube-p2-default'
         namespace: 'default'
-        manifests: |
+        manifests: 
           $(Pipeline.Workspace)/manifest/deployment.yml
           $(Pipeline.Workspace)/manifest/service.yml
-        imagePullSecrets: |
-          $(imagePullSecret)
-        containers: |
-          $(containerRegistry)/$(imageRepository):$(tag)
+        containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+        imagePullSecrets: '$(imagePullSecret)'
