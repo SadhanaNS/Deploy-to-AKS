@@ -35,7 +35,7 @@ stages:
         targetPath: '$(Pipeline.Workspace)/s/kubernetes'
         artifact: 'manifest'
         publishLocation: 'pipeline'
-- stage: Build
+- stage: deploy
   displayName: deploy to dev
   dependsOn: Build
   variables:
