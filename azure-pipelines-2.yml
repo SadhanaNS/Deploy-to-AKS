@@ -44,7 +44,7 @@ stages:
   - job: Deploy
     displayName: DeploytoAKS
     pool:
-      vmImage:ubuntu-latest
+      vmImage: ubuntu-latest
     steps:
     - task: DownloadPipelineArtifact@2
       inputs:
