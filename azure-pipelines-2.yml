@@ -1,0 +1,71 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  imagerepo: sampleapp
+  tag: '$(Build.BuildId)'
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'kubernetedcontainer'
+        repository: 'sample'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(tag)
+          latest
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/s/kubernetes'
+        artifact: 'manifest'
+        publishLocation: 'pipeline'
+- stage: Build
+  displayName: deploy to dev
+  dependsOn: Build
+  variables:
+    acrsecret: k8sadhana
+  jobs:
+  - job: Deploy
+    displayName: DeploytoAKS
+    pool:
+      vmImage:ubuntu-latest
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'manifest'
+        targetPath: '$(Pipeline.Workspace)/manifest' 
+    - task: KubernetesManifest@1
+      inputs:
+        action: 'createSecret'
+        connectionType: 'kubernetesServiceConnection'
+        kubernetesServiceConnection: 'kubernetesserviceconnection'
+        namespace: 'default'
+        secretType: 'dockerRegistry'
+        secretName: '$(acrsecret)'
+        dockerRegistryEndpoint: 'dockerserviceconnection'
+    
+    - task: KubernetesManifest@1
+      inputs:
+        action: 'deploy'
+        connectionType: 'kubernetesServiceConnection'
+        kubernetesServiceConnection: 'kubernetesserviceconnection'
+        namespace: 'default'
+        manifests: 
+          $(Pipeline.Workspace)/manifest/deployment.yml
+          $(Pipeline.Workspace)/manifest/service.yml
