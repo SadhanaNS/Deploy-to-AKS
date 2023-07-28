@@ -61,12 +61,18 @@ stages:
         buildType: 'current'
         artifactName: 'manifest'
         targetPath: '$(Pipeline.Workspace)/manifest' 
-    - task: KubernetesManifest@0
-      displayName: Create imagePullSecret
+    - task: KubernetesManifest@1
+      displayName: create secret
       inputs:
-        action: createSecret
+        action: 'createSecret'
+        connectionType: 'azureResourceManager'
+        azureSubscriptionConnection: 'Pay-As-You-Go(1)(63624c86-fe10-49d1-b0c7-b5b0be84da6a)'
+        azureResourceGroup: 'adi-p12'
+        kubernetesCluster: 'Kube-p2'
+        namespace: 'default'
+        secretType: 'dockerRegistry'
         secretName: $(imagePullSecret)
-        dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+        dockerRegistryEndpoint: 'dockerserviceconnection'
     
     - task: KubernetesManifest@1
       inputs:
