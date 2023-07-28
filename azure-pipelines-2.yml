@@ -16,7 +16,7 @@ variables:
   containerRegistry: 'kubernetedcontainer.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'kubernetedcontainer60088e47-auth'
+  imagePullSecret: 'kubernetedcontainer1265936e-auth'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
