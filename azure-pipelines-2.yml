@@ -11,7 +11,7 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '08971393-9404-436c-a79c-6fa962408362'
+  dockerRegistryServiceConnection: '61d234ea-d5ad-4c35-b534-ac9c5c48fc2c'
   imageRepository: 'sample'
   containerRegistry: 'kubernetedcontainer.azurecr.io'
   dockerfilePath: '**/Dockerfile'
