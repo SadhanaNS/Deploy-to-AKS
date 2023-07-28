@@ -75,11 +75,29 @@ stages:
         dockerRegistryEndpoint: 'dockerserviceconnection'
     
     - task: KubernetesManifest@1
+      displayName: create secret
+      inputs:
+        action: 'createSecret'
+        connectionType: 'azureResourceManager'
+        azureSubscriptionConnection: 'Pay-As-You-Go(1)(63624c86-fe10-49d1-b0c7-b5b0be84da6a)'
+        azureResourceGroup: 'adi-p12'
+        kubernetesCluster: 'Kube-p2'
+        namespace: 'default'
+        secretType: 'dockerRegistry'
+        secretName: $(imagePullSecret)
+        dockerRegistryEndpoint: 'dockerserviceconnection'
+
+    - task: KubernetesManifest@1
+      displayName: deploy to kuberntes cluster
       inputs:
         action: 'deploy'
         connectionType: 'kubernetesServiceConnection'
         kubernetesServiceConnection: 'kubernetesserviceconnection'
         namespace: 'default'
-        manifests: 
-          $(Pipeline.Workspace)/manifest/deployment.yml
-          $(Pipeline.Workspace)/manifest/service.yml
+        manifests: |
+          $(Pipeline.Workspace)/menifests/deployment.yml
+          $(Pipeline.Workspace)/menifests/service.yml
+        imagePullSecrets: |
+          $(imagePullSecret)
+        containers: |
+          $(containerRegistry)/$(imageRepository):$(tag)
