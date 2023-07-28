@@ -61,15 +61,12 @@ stages:
         buildType: 'current'
         artifactName: 'manifest'
         targetPath: '$(Pipeline.Workspace)/manifest' 
-    - task: KubernetesManifest@1
+    - task: KubernetesManifest@0
+      displayName: Create imagePullSecret
       inputs:
-        action: 'createSecret'
-        connectionType: 'kubernetesServiceConnection'
-        kubernetesServiceConnection: 'kubernetesserviceconnection'
-        namespace: 'default'
-        secretType: 'dockerRegistry'
-        secretName: '$(acrsecret)'
-        dockerRegistryEndpoint: 'dockerserviceconnection'
+        action: createSecret
+        secretName: $(imagePullSecret)
+        dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
     
     - task: KubernetesManifest@1
       inputs:
