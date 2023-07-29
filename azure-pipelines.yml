@@ -11,12 +11,12 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '0b8a024e-c85d-4144-887b-2c7ff1c74aed'
+  dockerRegistryServiceConnection: 'dockerserviceconnection'
   imageRepository: 'sample'
   containerRegistry: 'kubernetedcontainer.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'kubernetedcontainer34dd-auth'
+  imagePullSecret: 'kubesecret'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
