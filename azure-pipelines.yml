@@ -2,8 +2,8 @@
 # Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-trigger: none
-
+trigger:
+- main
 
 resources:
 - repo: self
@@ -53,7 +53,7 @@ stages:
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
-    environment: 'SadhanaNSDeploytoAKS-1831.default'
+    environment: 'SadhanaNSDeploytoAKS-5011.default'
     strategy:
       runOnce:
         deploy:
