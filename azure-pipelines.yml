@@ -55,6 +55,7 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: KubernetesManifest@1
+      displayName: create secret
       inputs:
         action: 'createSecret'
         connectionType: 'kubernetesServiceConnection'
