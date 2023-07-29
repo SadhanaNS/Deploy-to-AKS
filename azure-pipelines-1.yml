@@ -1,0 +1,65 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+
+variables:
+  imagerepository: 'Sample'
+  imagePullSecret:'dockerregistryserviceconnection'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      inputs:
+        command: 'buildAndPush'
+        repository: $(imagerepository)
+        Dockerfile: '**/Dockerfile'
+        containerRegistry: 'dockerregistryserviceconnection'
+        tags: 
+          $(tag)
+
+    - upload: manifests
+      artifact: manifests
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  -  deployment: 
+     displayName: deploy to stage
+     environment: 'k8sdev.default'
+     strategy:
+       runOnce:
+         deploy:
+           steps:
+           - task: KubernetesManifest@1
+             displayName:   create image pull secret
+             inputs:
+               action: 'createSecret'
+               secretName: '$(imagePullSecret)'
+               dockerRegistryEndpoint: 'dockerregistryserviceconnection'
+           - task: KubernetesManifest@1
+             inputs:
+               action: 'deploy'
+               manifests: 
+                 $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
+ 
