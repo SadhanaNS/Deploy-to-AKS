@@ -6,11 +6,15 @@
 trigger: none
 
 variables:
-  imagerepository: 'Sample'
-  imagePullSecret:'dockerregistryserviceconnection'
+  # Container registry service connection established during pipeline creation
+  imageRepository: 'sample'
+  containerRegistry: 'kubernetedcontainer.azurecr.io'
+  tag: '$(Build.BuildId)'
+  imagePullSecret: 'dockerregistryserviceconnection'
 
-pool:
-  vmImage: ubuntu-latest
+  # Agent VM image name
+pool:  
+  vmImageName: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -56,10 +60,10 @@ stages:
                action: 'deploy'
                manifests: 
                  $(Pipeline.Workspace)/manifests/deployment.yml
-                $(Pipeline.Workspace)/manifests/service.yml
-              imagePullSecrets: |
-                $(imagePullSecret)
-              containers: |
-                $(containerRegistry)/$(imageRepository):$(tag)
+                 $(Pipeline.Workspace)/manifests/service.yml
+               imagePullSecrets: |
+                 $(imagePullSecret)
+               containers: |
+                 $(containerRegistry)/$(imageRepository):$(tag)
 
  
