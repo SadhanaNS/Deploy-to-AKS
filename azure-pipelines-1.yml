@@ -43,6 +43,8 @@ stages:
   jobs:
   -  deployment: 
      displayName: deploy to stage
+     pool:
+      vmImage: $(vmImageName)
      environment: 'k8sdev.default'
      strategy:
        runOnce:
