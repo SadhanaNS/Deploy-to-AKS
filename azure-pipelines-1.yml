@@ -1,4 +1,4 @@
-.# Starter pipeline
+# Starter pipeline
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -13,7 +13,6 @@ variables:
   imagePullSecret: 'dockerregistryserviceconnection'
 
   # Agent VM image name
-pool:  
   vmImageName: 'ubuntu-latest'
 
 stages:
@@ -23,7 +22,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       inputs:
