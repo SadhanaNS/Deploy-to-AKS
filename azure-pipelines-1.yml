@@ -62,12 +62,12 @@ stages:
            - task: KubernetesManifest@1
              inputs:
               action: 'deploy'            
-              manifests: 
+              manifests: | 
                 $(Pipeline.Workspace)/manifests/deployment.yml 
                 $(Pipeline.Workspace)/manifests/service.yml
-              imagePullSecrets:
+              imagePullSecrets: |
                $(imagePullSecret)
-              containers:
+              containers: |
                $(containerRegistry)/$(imageRepository):$(tag)
 
  
