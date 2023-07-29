@@ -65,8 +65,13 @@ stages:
                connectionType: 'kubernetesServiceConnection'
                kubernetesServiceConnection: 'kubernetesserviceconnection'
                namespace: 'default'
-               manifests: '$(Pipeline.Workspace)/manifests/deployment.yml $(Pipeline.Workspace)/manifests/service.yml'
-               containers: '$(containerRegistry)/$(imageRepository):$(tag)'
-               imagePullSecrets: '$(imagePullSecret)'
+               manifests: 
+                 $(Pipeline.Workspace)/manifests/deployment.yml 
+                 $(Pipeline.Workspace)/manifests/service.yml
+               imagePullSecrets:
+                $(imagePullSecret)
+               containers:
+                $(containerRegistry)/$(imageRepository):$(tag)
+               imagePullSecrets: $(imagePullSecret)
 
  
