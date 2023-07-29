@@ -45,7 +45,7 @@ stages:
      displayName: deploy to stage
      pool:
       vmImage: $(vmImageName)
-     environment: 'k8sdev.default'
+     environment: 'SadhanaNSDeploytoAKS-1317.default'
      strategy:
        runOnce:
          deploy:
