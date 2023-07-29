@@ -49,31 +49,35 @@ stages:
   dependsOn: Build
 
   jobs:
-  - job: Deploy
+  - deployment: Deploy
     displayName: deploy to dev
     pool:
       vmImage: $(vmImageName)
-    steps:
-    - task: KubernetesManifest@1
-      displayName: create secret
-      inputs:
-        action: 'createSecret'
-        connectionType: 'kubernetesServiceConnection'
-        kubernetesServiceConnection: 'kubernetesserviceconnection'
-        namespace: 'default'
-        secretType: 'dockerRegistry'
-        secretName: '$(imagePullSecret)'
-        dockerRegistryEndpoint: 'dockerregistryserviceconnection'
+    environment: 'SadhanaNSDeploytoAKS-1317.default'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@1
+            displayName: create secret
+            inputs:
+              action: 'createSecret'
+              connectionType: 'kubernetesServiceConnection'
+              kubernetesServiceConnection: 'kubernetesserviceconnection'
+              namespace: 'default'
+              secretType: 'dockerRegistry'
+              secretName: '$(imagePullSecret)'
+              dockerRegistryEndpoint: 'dockerregistryserviceconnection'
 
-    - task: KubernetesManifest@0
-      displayName: Deploy to Kubernetes cluster
-      inputs:
-        action: deploy
-        manifests: |
-          $(Pipeline.Workspace)/manifests/deployment.yml
-          $(Pipeline.Workspace)/manifests/service.yml
-        imagePullSecrets: |
-          $(imagePullSecret)
-        containers: |
-          $(containerRegistry)/$(imageRepository):$(tag)
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
     
